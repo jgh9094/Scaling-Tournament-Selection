@@ -37,4 +37,6 @@ python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
 --t_scale 1 \
 --seed ${SEED} \
 --output_dir ${RESULTS_DIR} \
---n_cpus 8
+--n_cpus 8 \
+--pop_size 250 \
+--n_generations 100
