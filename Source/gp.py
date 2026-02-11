@@ -1144,8 +1144,30 @@ def run_evolution(data_dir: str,
     logger.info(f"Crossover rate: {cxpb}, Mutation rate: {mutpb}")
     logger.info(f"Max height: {max_height}, Max size: {max_size}")
     logger.info(f"Using {n_cpus} CPU(s) for parallelization")
-    selection_name = "Lexicase" if selection == 'l' else f"Tournament (size={t_size}, scale={t_scale_bool})"
-    logger.info(f"Selection algorithm: {selection_name}")
+
+    # Detailed parent selection algorithm information
+    logger.info("=" * 60)
+    logger.info("PARENT SELECTION ALGORITHM DETAILS")
+    logger.info("=" * 60)
+    if selection == 'l':
+        logger.info(f"Algorithm: Dynamic Epsilon Lexicase Selection")
+        logger.info(f"  - Method: Error-based selection with dynamic epsilon threshold")
+        logger.info(f"  - Epsilon calculation: Median Absolute Deviation (MAD)")
+        logger.info(f"  - Test case ordering: Randomly shuffled per selection")
+        logger.info(f"  - Filtering: Candidates within min_error + epsilon on each case")
+        logger.info(f"  - Tie-breaking: Random selection among remaining candidates")
+    else:
+        logger.info(f"Algorithm: Tournament Selection")
+        logger.info(f"  - Tournament size: {t_size}")
+        logger.info(f"  - Random vector scaling: {'Enabled' if t_scale_bool else 'Disabled'}")
+        if t_scale_bool:
+            logger.info(f"    * Scaling method: Uniform random weights [0.0, 1.0] per test case")
+            logger.info(f"    * Fitness aggregation: Sum of (error_vector * random_weights)")
+        else:
+            logger.info(f"    * Fitness aggregation: Sum of error_vector (uniform weighting)")
+        logger.info(f"  - Selection: Minimum aggregated fitness from tournament pool")
+        logger.info(f"  - Tie-breaking: Random selection among tied candidates")
+    logger.info("=" * 60)
 
     # Load data
     X_train, y_train, X_val, y_val, X_test, y_test, feature_names = load_data(data_dir, split_dir)
