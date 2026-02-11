@@ -1,0 +1,12 @@
+=== Split Summary ===
+Input CSV:         /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Concrete/data.csv
+Output Directory:  /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Concrete/Splits/P250/T100/Rep_2
+Data rows (N):     1030
+Proportions:       train=0.7, val=0.15, test=0.15
+Allocated counts:  train=721, val=155, test=154
+Seed:              1520
+Rep:               2
+Saved:
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Concrete/Splits/P250/T100/Rep_2/training.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Concrete/Splits/P250/T100/Rep_2/validation.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Concrete/Splits/P250/T100/Rep_2/testing.npy

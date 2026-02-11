@@ -1,0 +1,12 @@
+=== Split Summary ===
+Input CSV:         /Users/hernandezj45/Desktop/Repositories/Agentic-Parent-Selection-Configuration/GPTP/DATA/Yacht/data.csv
+Output Directory:  /Users/hernandezj45/Desktop/Repositories/Agentic-Parent-Selection-Configuration/GPTP/DATA/Yacht/Splits/Tournament/Rep_9
+Data rows (N):     308
+Proportions:       train=0.7, val=0.15, test=0.15
+Allocated counts:  train=216, val=46, test=46
+Seed:              349
+Rep:               9
+Saved:
+  - /Users/hernandezj45/Desktop/Repositories/Agentic-Parent-Selection-Configuration/GPTP/DATA/Yacht/Splits/Tournament/Rep_9/training.npy
+  - /Users/hernandezj45/Desktop/Repositories/Agentic-Parent-Selection-Configuration/GPTP/DATA/Yacht/Splits/Tournament/Rep_9/validation.npy
+  - /Users/hernandezj45/Desktop/Repositories/Agentic-Parent-Selection-Configuration/GPTP/DATA/Yacht/Splits/Tournament/Rep_9/testing.npy

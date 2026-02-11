@@ -1,0 +1,40 @@
+#!/bin/bash
+########## Define Resources Needed with SBATCH Lines ##########
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --array=1-31
+#SBATCH --cpus-per-task=12
+#SBATCH -t 02:00:00
+#SBATCH --mem=10GB
+#SBATCH --job-name=c500t500
+#SBATCH -p defq,moore
+#SBATCH --exclude=esplhpc-cp040
+###############################################################
+
+# load conda environment
+source ~/anaconda3/etc/profile.d/conda.sh
+conda activate agp-ps
+
+# Define the selector and output directory (they are the same here)
+MAIN_DIR=~/Repos/Scaling-Tournament-Selection/
+DATA_DIR=${MAIN_DIR}DATA/Concrete/
+REP_DIR=${DATA_DIR}Splits/P500/T500/Rep_${SLURM_ARRAY_TASK_ID}/
+RESULTS_DIR=${MAIN_DIR}RESULTS/Concrete/P500/T500/Rep_${SLURM_ARRAY_TASK_ID}/
+
+# make results directory
+mkdir -p ${RESULTS_DIR}
+
+# Seed param offset
+OFFSET=$((31*59))
+SEED=$((SLURM_ARRAY_TASK_ID + OFFSET))
+
+# let it rip
+python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
+--data_dir ${DATA_DIR} \
+--split_dir ${REP_DIR} \
+--selection t \
+--t_size 500 \
+--t_scale 1 \
+--seed ${SEED} \
+--output_dir ${RESULTS_DIR} \
+--n_cpus 12
