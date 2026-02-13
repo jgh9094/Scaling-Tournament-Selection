@@ -33,7 +33,7 @@ python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
 --data_dir ${DATA_DIR} \
 --split_dir ${REP_DIR} \
 --selection t \
---t_size 150 \
+--t_size 100 \
 --t_scale 1.0 \
 --seed ${SEED} \
 --output_dir ${RESULTS_DIR} \
