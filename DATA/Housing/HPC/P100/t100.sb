@@ -25,7 +25,7 @@ RESULTS_DIR=${MAIN_DIR}RESULTS/Housing/P100/T100/Rep_${SLURM_ARRAY_TASK_ID}/
 mkdir -p ${RESULTS_DIR}
 
 # Seed param offset
-OFFSET=$((31*132))
+OFFSET=$((31*123))
 SEED=$((SLURM_ARRAY_TASK_ID + OFFSET))
 
 # let it rip
@@ -33,8 +33,8 @@ python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
 --data_dir ${DATA_DIR} \
 --split_dir ${REP_DIR} \
 --selection t \
---t_size 100 \
---t_scale 1 \
+--t_size 30 \
+--t_scale 1.0 \
 --seed ${SEED} \
 --output_dir ${RESULTS_DIR} \
 --n_cpus 6 \

@@ -33,8 +33,8 @@ python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
 --data_dir ${DATA_DIR} \
 --split_dir ${REP_DIR} \
 --selection t \
---t_size 50 \
---t_scale 1 \
+--t_size 150 \
+--t_scale 0.5 \
 --seed ${SEED} \
 --output_dir ${RESULTS_DIR} \
 --n_cpus 12 \
