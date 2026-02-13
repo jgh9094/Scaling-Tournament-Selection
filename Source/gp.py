@@ -1156,6 +1156,7 @@ def run_evolution(data_dir: str,
     else:
         logger.info(f"Algorithm: Tournament Selection")
         logger.info(f"  - Tournament size: {t_size}")
+        logger.info(f"  - Random vector scaling: {t_scale}")
         logger.info(f"  - Selection: Minimum aggregated fitness from tournament pool")
         logger.info(f"  - Tie-breaking: Random selection among tied candidates")
     logger.info("=" * 60)
