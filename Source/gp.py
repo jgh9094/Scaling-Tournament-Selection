@@ -691,8 +691,8 @@ def ray_select_parents_batch(selection_type: str,
                              fitnesses_per_sample: List[List[float]],
                              n_parents: int,
                              seed: int,
-                             t_size: int = 2,
-                             t_scale: bool = False) -> List[int]:
+                             t_size: int,
+                             t_scale: float) -> List[int]:
     """
     Ray remote function to perform batch parent selection.
 
@@ -704,7 +704,7 @@ def ray_select_parents_batch(selection_type: str,
         n_parents: Number of parents to select in this batch.
         seed: Random seed for this batch (for reproducibility).
         t_size: Tournament size (only used when selection_type is 't').
-        t_scale: Whether to apply random vector scaling (only used when selection_type is 't').
+        t_scale: Probability of scale occuring (only used when selection_type is 't').
 
     Returns:
         List of selected parent indices.
@@ -717,7 +717,7 @@ def ray_select_parents_batch(selection_type: str,
         if selection_type == 'l':
             parent_idx = dynamic_epsilon_lexicase(fitnesses_per_sample, rng)
         elif selection_type == 't':
-            parent_idx = tournament(fitnesses_per_sample, t_size, rng, t_scale)
+            parent_idx = tournament(fitnesses_per_sample, t_size, rng, rng.random() < t_scale)
         else:
             raise ValueError(f"Unknown selection type: {selection_type}")
         selected_parents.append(parent_idx)
@@ -734,8 +734,8 @@ def generate_offspring(population: List,
                        max_height: int,
                        rng: np.random.Generator,
                        n_cpus: int,
-                       t_size: int = 2,
-                       t_scale: bool = False) -> List:
+                       t_size: int,
+                       t_scale: float) -> List:
     """
     Generate offspring for the next generation.
 
@@ -1083,10 +1083,10 @@ def run_evolution(data_dir: str,
                   seed: int,
                   output_dir: str,
                   n_cpus: int,
-                  t_size: int = 2,
-                  t_scale: int = 0,
-                  pop_size: int = 500,
-                  n_generations: int = 50,
+                  t_size: int,
+                  t_scale: int,
+                  pop_size: int,
+                  n_generations: int,
                   cxpb: float = 0.8,
                   mutpb: float = 0.2,
                   max_height: int = 17,
@@ -1102,7 +1102,7 @@ def run_evolution(data_dir: str,
         output_dir: Directory to save outputs.
         n_cpus: Number of CPUs for parallelization.
         t_size: Tournament size (default 2).
-        t_scale: Tournament scaling (0 or 1, converted to boolean, default 0).
+        t_scale: Probability of random vector scaling in tournament selection (default 0, meaning no scaling).
         pop_size: Population size (default 500).
         n_generations: Number of generations (default 50).
         cxpb: Crossover probability (default 0.8).
@@ -1136,9 +1136,6 @@ def run_evolution(data_dir: str,
             logger.error(f"Failed to initialize Ray: {e}")
             raise
 
-    # Convert t_scale from int to bool
-    t_scale_bool = bool(t_scale)
-
     logger.info(f"Starting GP evolution with seed: {seed}")
     logger.info(f"Population size: {pop_size}, Generations: {n_generations}")
     logger.info(f"Crossover rate: {cxpb}, Mutation rate: {mutpb}")
@@ -1159,12 +1156,6 @@ def run_evolution(data_dir: str,
     else:
         logger.info(f"Algorithm: Tournament Selection")
         logger.info(f"  - Tournament size: {t_size}")
-        logger.info(f"  - Random vector scaling: {'Enabled' if t_scale_bool else 'Disabled'}")
-        if t_scale_bool:
-            logger.info(f"    * Scaling method: Uniform random weights [0.0, 1.0] per test case")
-            logger.info(f"    * Fitness aggregation: Sum of (error_vector * random_weights)")
-        else:
-            logger.info(f"    * Fitness aggregation: Sum of error_vector (uniform weighting)")
         logger.info(f"  - Selection: Minimum aggregated fitness from tournament pool")
         logger.info(f"  - Tie-breaking: Random selection among tied candidates")
     logger.info("=" * 60)
@@ -1329,7 +1320,7 @@ def run_evolution(data_dir: str,
                 rng=rng,
                 n_cpus=n_cpus,
                 t_size=t_size,
-                t_scale=t_scale_bool
+                t_scale=t_scale
             )
 
             # No replacement strategy: offspring becomes the new population
@@ -1429,10 +1420,9 @@ def parse_arguments() -> argparse.Namespace:
 
     parser.add_argument(
         '--t_scale',
-        type=int,
-        default=0,
-        choices=[0, 1],
-        help='Tournament scaling (0 or 1, converted to boolean, only used when --selection is t)'
+        type=float,
+        default=0.0,
+        help='Probability of scale being used'
     )
 
     parser.add_argument(
