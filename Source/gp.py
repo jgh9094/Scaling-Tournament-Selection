@@ -290,7 +290,7 @@ def safe_mul(x: float, y: float) -> float:
 # =============================================================================
 
 def validate_inputs(data_dir: str, split_dir: str, output_dir: str,
-                    seed: int, n_cpus: int, selection: str, t_size: int) -> None:
+                    seed: int, n_cpus: int, selection: str, t_size: int, t_zero_prop: float, t_zero_prob: float) -> None:
     """
     Validate all input arguments and ensure required files exist.
 
@@ -302,6 +302,8 @@ def validate_inputs(data_dir: str, split_dir: str, output_dir: str,
         n_cpus: Number of CPUs for parallelization.
         selection: Selection algorithm ('l' or 't').
         t_size: Tournament size (must be >= 1).
+        t_zero_prop: Zero proportion (must be between 0.0 and 1.0).
+        t_zero_prob: Probability of applying zero-masking (must be between 0.0 and 1.0).
 
     Raises:
         AssertionError: If any validation check fails.
@@ -332,6 +334,10 @@ def validate_inputs(data_dir: str, split_dir: str, output_dir: str,
     # Validate selection parameters
     assert selection in ['l', 't'], f"Selection must be 'l' or 't', got: {selection}"
     assert isinstance(t_size, int) and t_size >= 1, f"t_size must be a positive integer, got: {t_size}"
+    assert isinstance(t_zero_prop, (int, float)) and 0.0 <= t_zero_prop <= 1.0, \
+        f"t_zero_prop must be a float between 0.0 and 1.0, got: {t_zero_prop}"
+    assert isinstance(t_zero_prob, (int, float)) and 0.0 <= t_zero_prob <= 1.0, \
+        f"t_zero_prob must be a float between 0.0 and 1.0, got: {t_zero_prob}"
 
     logger.info("All input validations passed.")
 
@@ -643,15 +649,16 @@ def dynamic_epsilon_lexicase(fitnesses: List[List[float]], rng: np.random.Genera
     # If multiple candidates remain, select one at random
     return rng.choice(candidates)
 
-def tournament(fitnesses: List[List[float]], tournament_size: int, rng: np.random.Generator, scale: bool) -> int:
+def tournament(fitnesses: List[List[float]], tournament_size: int, rng: np.random.Generator, scale: bool, zero_proportion: float) -> int:
     """
-    Tournament selection with the optional random vector scaling.
+    Tournament selection with the optional random vector scaling and zero-masking.
 
     Args:
         fitnesses: List of lists where each inner list is an error vector to be minimized
         tournament_size: Number of individuals to sample for the tournament (e.g., 2).
         rng: Random number generator for reproducibility.
         scale: Whether to apply random vector scaling to the fitnesses.
+        zero_proportion: Float in [0, 1] that specifies the proportion of zeros to incorporate in the masking vector.
 
     Returns:
         int: Index of the selected parent
@@ -673,8 +680,16 @@ def tournament(fitnesses: List[List[float]], tournament_size: int, rng: np.rando
     # Get fitness vectors for all candidates
     candidate_fitnesses = fitnesses_array[candidate_indices]
 
-    # Scale fitness vectors by the random vector (element-wise multiplication) and sum
-    scaled_fitnesses = np.sum(candidate_fitnesses * random_scaling, axis=1)
+    # Create zero-masking vector based on zero_proportion
+    num_zeros = int(zero_proportion * vector_length)
+    zero_mask = np.ones(vector_length)
+    if num_zeros > 0:
+        # Randomly select positions to set to zero
+        zero_indices = rng.choice(vector_length, size=num_zeros, replace=False)
+        zero_mask[zero_indices] = 0.0
+
+    # Scale fitness vectors by the random vector and zero mask (element-wise multiplication) and sum
+    scaled_fitnesses = np.sum(candidate_fitnesses * random_scaling * zero_mask, axis=1)
 
     # Return the index of the candidate with lowest scaled fitness (minimization)
     best_tournament_idx = np.argmin(scaled_fitnesses)
@@ -692,7 +707,9 @@ def ray_select_parents_batch(selection_type: str,
                              n_parents: int,
                              seed: int,
                              t_size: int,
-                             t_scale: float) -> List[int]:
+                             t_scale: float,
+                             t_zero_prop: float,
+                             t_zero_prob: float) -> List[int]:
     """
     Ray remote function to perform batch parent selection.
 
@@ -705,6 +722,8 @@ def ray_select_parents_batch(selection_type: str,
         seed: Random seed for this batch (for reproducibility).
         t_size: Tournament size (only used when selection_type is 't').
         t_scale: Probability of scale occuring (only used when selection_type is 't').
+        t_zero_prop: Proportion of zeros in the masking vector (only used when selection_type is 't').
+        t_zero_prob: Probability of applying zero-masking (only used when selection_type is 't').
 
     Returns:
         List of selected parent indices.
@@ -717,7 +736,9 @@ def ray_select_parents_batch(selection_type: str,
         if selection_type == 'l':
             parent_idx = dynamic_epsilon_lexicase(fitnesses_per_sample, rng)
         elif selection_type == 't':
-            parent_idx = tournament(fitnesses_per_sample, t_size, rng, rng.random() < t_scale)
+            # Determine if zero-masking should be applied based on probability
+            zero_prop_to_use = t_zero_prop if rng.random() < t_zero_prob else 0.0
+            parent_idx = tournament(fitnesses_per_sample, t_size, rng, rng.random() < t_scale, zero_prop_to_use)
         else:
             raise ValueError(f"Unknown selection type: {selection_type}")
         selected_parents.append(parent_idx)
@@ -735,7 +756,9 @@ def generate_offspring(population: List,
                        rng: np.random.Generator,
                        n_cpus: int,
                        t_size: int,
-                       t_scale: float) -> List:
+                       t_scale: float,
+                       t_zero_prop: float,
+                       t_zero_prob: float) -> List:
     """
     Generate offspring for the next generation.
 
@@ -757,6 +780,8 @@ def generate_offspring(population: List,
         n_cpus: Number of CPUs for parallelization.
         t_size: Tournament size (only used when selection_type is 't').
         t_scale: Whether to apply random vector scaling (only used when selection_type is 't').
+        t_zero_prop: Proportion of zeros in the masking vector (only used when selection_type is 't').
+        t_zero_prob: Probability of applying zero-masking (only used when selection_type is 't').
 
     Returns:
         List of offspring individuals.
@@ -806,7 +831,9 @@ def generate_offspring(population: List,
             n_parents_in_batch,
             batch_seed,
             t_size,
-            t_scale
+            t_scale,
+            t_zero_prop,
+            t_zero_prob
         )
         pending_refs.append(ref)
 
@@ -1085,6 +1112,8 @@ def run_evolution(data_dir: str,
                   n_cpus: int,
                   t_size: int,
                   t_scale: int,
+                  t_zero_prop: float,
+                  t_zero_prob: float,
                   pop_size: int,
                   n_generations: int,
                   cxpb: float = 0.8,
@@ -1103,6 +1132,8 @@ def run_evolution(data_dir: str,
         n_cpus: Number of CPUs for parallelization.
         t_size: Tournament size (default 2).
         t_scale: Probability of random vector scaling in tournament selection (default 0, meaning no scaling).
+        t_zero_prop: Proportion of zeros in the masking vector for tournament selection (default 0.0).
+        t_zero_prob: Probability of applying zero-masking (default 0.0).
         pop_size: Population size (default 500).
         n_generations: Number of generations (default 50).
         cxpb: Crossover probability (default 0.8).
@@ -1157,6 +1188,8 @@ def run_evolution(data_dir: str,
         logger.info(f"Algorithm: Tournament Selection")
         logger.info(f"  - Tournament size: {t_size}")
         logger.info(f"  - Random vector scaling: {t_scale}")
+        logger.info(f"  - Zero proportion: {t_zero_prop}")
+        logger.info(f"  - Zero probability: {t_zero_prob}")
         logger.info(f"  - Selection: Minimum aggregated fitness from tournament pool")
         logger.info(f"  - Tie-breaking: Random selection among tied candidates")
     logger.info("=" * 60)
@@ -1321,7 +1354,9 @@ def run_evolution(data_dir: str,
                 rng=rng,
                 n_cpus=n_cpus,
                 t_size=t_size,
-                t_scale=t_scale
+                t_scale=t_scale,
+                t_zero_prop=t_zero_prop,
+                t_zero_prob=t_zero_prob
             )
 
             # No replacement strategy: offspring becomes the new population
@@ -1427,6 +1462,20 @@ def parse_arguments() -> argparse.Namespace:
     )
 
     parser.add_argument(
+        '--t_zero_prop',
+        type=float,
+        default=0.0,
+        help='Proportion of zeros in the masking vector (0.0 to 1.0)'
+    )
+
+    parser.add_argument(
+        '--t_zero_prob',
+        type=float,
+        default=0.0,
+        help='Probability of applying zero-masking (0.0 to 1.0)'
+    )
+
+    parser.add_argument(
         '--seed',
         type=int,
         required=True,
@@ -1477,7 +1526,9 @@ def main() -> None:
         seed=args.seed,
         n_cpus=args.n_cpus,
         selection=args.selection,
-        t_size=args.t_size
+        t_size=args.t_size,
+        t_zero_prop=args.t_zero_prop,
+        t_zero_prob=args.t_zero_prob
     )
 
     # Run evolution
@@ -1491,6 +1542,8 @@ def main() -> None:
         n_cpus=args.n_cpus,
         t_size=args.t_size,
         t_scale=args.t_scale,
+        t_zero_prop=args.t_zero_prop,
+        t_zero_prob=args.t_zero_prob,
         pop_size=args.pop_size,
         n_generations=args.n_generations
     )
