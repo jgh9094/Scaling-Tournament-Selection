@@ -1,0 +1,12 @@
+=== Split Summary ===
+Input CSV:         /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Energy-H/data.csv
+Output Directory:  /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Scaling/Energy-H/Splits/T100/Rep_14
+Data rows (N):     768
+Proportions:       train=0.7, val=0.15, test=0.15
+Allocated counts:  train=538, val=115, test=115
+Seed:              1037
+Rep:               14
+Saved:
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Scaling/Energy-H/Splits/T100/Rep_14/training.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Scaling/Energy-H/Splits/T100/Rep_14/validation.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Scaling/Energy-H/Splits/T100/Rep_14/testing.npy
