@@ -22,8 +22,8 @@ TASK=Airfoil
 # Define the selector and output directory (they are the same here)
 MAIN_DIR=~/Repos/Scaling-Tournament-Selection/
 DATA_DIR=${MAIN_DIR}DATA/${TASK}/
-REP_DIR=${MAIN_DIR}Scaling/${TASK}/Splits/T${TOURNAMENT_SIZE}/Rep_${SLURM_ARRAY_TASK_ID}/
-RESULTS_DIR=${MAIN_DIR}RESULTS/${TASK}/Scaling/T${TOURNAMENT_SIZE}/Rep_${SLURM_ARRAY_TASK_ID}/
+REP_DIR=${MAIN_DIR}Scaling/${TASK}/Splits/T${PROPORTION}/Rep_${SLURM_ARRAY_TASK_ID}/
+RESULTS_DIR=${MAIN_DIR}RESULTS/${TASK}/Scaling/T${PROPORTION}/Rep_${SLURM_ARRAY_TASK_ID}/
 mkdir -p ${RESULTS_DIR}
 
 # Seed param offset
@@ -35,7 +35,7 @@ python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
 --data_dir ${DATA_DIR} \
 --split_dir ${REP_DIR} \
 --selection t \
---t_size ${TOURNAMENT_SIZE} \
+--t_size ${PROPORTION} \
 --seed ${SEED} \
 --output_dir ${RESULTS_DIR} \
 --n_cpus 12 \
