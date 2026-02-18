@@ -25,12 +25,19 @@ while IFS= read -r sb_file; do
     dataset=$(echo "$sb_file" | cut -d'/' -f2)
     prob=$(echo "$sb_file" | cut -d'/' -f3)
     filename=$(basename "$sb_file")
+    file_dir=$(dirname "$sb_file")
 
     echo "Submitting: ${dataset}/${prob}/HPC/${filename}"
 
+    # Change to the directory containing the .sb file
+    cd "$file_dir" || continue
+
     # Submit the job
-    sbatch "$sb_file"
+    sbatch "$filename"
     ((total_submitted++))
+
+    # Return to Masking directory
+    cd "${MAIN_DIR}" || exit 1
 
 done < <(find . -path "*/*/HPC/*.sb" -type f | sort)
 
