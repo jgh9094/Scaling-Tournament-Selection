@@ -16,7 +16,7 @@ source ~/anaconda3/etc/profile.d/conda.sh
 conda activate agp-ps
 
 # Tournament size
-TOURNAMENT_SIZE=500
+PROPORTION=60
 TASK=Yacht
 
 # Define the selector and output directory (they are the same here)
