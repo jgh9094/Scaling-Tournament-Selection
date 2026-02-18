@@ -22,7 +22,7 @@ PROPORTION=75
 # Define the selector and output directory (they are the same here)
 MAIN_DIR=~/Repos/Scaling-Tournament-Selection/
 DATA_DIR=${MAIN_DIR}DATA/${TASK}/
-REP_DIR=${MAIN_DIR}Masking/${TASK}/Prob${PROBABILITY}/Splits/Prop${PROPORTION}/T${PROPORTION}/Rep_${SLURM_ARRAY_TASK_ID}/
+REP_DIR=${MAIN_DIR}Masking/${TASK}/Prob${PROBABILITY}/Splits/T${PROPORTION}/Rep_${SLURM_ARRAY_TASK_ID}/
 RESULTS_DIR=${MAIN_DIR}RESULTS/${TASK}/Masking/Prob${PROBABILITY}/Prop${PROPORTION}/T${PROPORTION}/Rep_${SLURM_ARRAY_TASK_ID}/
 mkdir -p ${RESULTS_DIR}
 
