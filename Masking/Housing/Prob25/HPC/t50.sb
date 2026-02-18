@@ -39,5 +39,5 @@ python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
 --seed ${SEED} \
 --output_dir ${RESULTS_DIR} \
 --n_cpus 12 \
---t_zero_prop ${PROPORTION} \
---t_zero_prob ${PROBABILITY}
+--t_zero_prop $(echo "scale=2; ${PROPORTION}/100" | bc) \
+--t_zero_prob $(echo "scale=2; ${PROBABILITY}/100" | bc)

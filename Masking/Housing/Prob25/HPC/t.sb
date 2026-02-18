@@ -37,6 +37,4 @@ python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
 --t_size 500 \
 --seed ${SEED} \
 --output_dir ${RESULTS_DIR} \
---n_cpus 12 \
---t_zero_prop ${PROPORTION} \
---t_zero_prob ${PROBABILITY}
+--n_cpus 12
