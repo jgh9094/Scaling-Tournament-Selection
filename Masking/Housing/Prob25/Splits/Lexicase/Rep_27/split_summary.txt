@@ -1,0 +1,12 @@
+=== Split Summary ===
+Input CSV:         /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Housing/data.csv
+Output Directory:  /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Housing/Prob25/Splits/Lexicase/Rep_27
+Data rows (N):     506
+Proportions:       train=0.7, val=0.15, test=0.15
+Allocated counts:  train=354, val=76, test=76
+Seed:              2507
+Rep:               27
+Saved:
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Housing/Prob25/Splits/Lexicase/Rep_27/training.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Housing/Prob25/Splits/Lexicase/Rep_27/validation.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Housing/Prob25/Splits/Lexicase/Rep_27/testing.npy

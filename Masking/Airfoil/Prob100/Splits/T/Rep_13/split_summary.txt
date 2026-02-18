@@ -1,0 +1,12 @@
+=== Split Summary ===
+Input CSV:         /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Airfoil/data.csv
+Output Directory:  /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Airfoil/Prob100/Splits/T/Rep_13
+Data rows (N):     1503
+Proportions:       train=0.7, val=0.15, test=0.15
+Allocated counts:  train=1052, val=226, test=225
+Seed:              509
+Rep:               13
+Saved:
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Airfoil/Prob100/Splits/T/Rep_13/training.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Airfoil/Prob100/Splits/T/Rep_13/validation.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Airfoil/Prob100/Splits/T/Rep_13/testing.npy

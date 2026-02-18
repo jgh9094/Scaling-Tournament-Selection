@@ -1,0 +1,43 @@
+#!/bin/bash
+########## Define Resources Needed with SBATCH Lines ##########
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --array=1-31
+#SBATCH --cpus-per-task=12
+#SBATCH -t 02:00:00
+#SBATCH --mem=10GB
+#SBATCH --job-name=air_t25
+#SBATCH -p defq,moore
+#SBATCH --exclude=esplhpc-cp040
+###############################################################
+
+# load conda environment
+source ~/anaconda3/etc/profile.d/conda.sh
+conda activate agp-ps
+
+TASK=Energy-C
+PROBABILITY=25
+PROPORTION=25
+
+# Define the selector and output directory (they are the same here)
+MAIN_DIR=~/Repos/Scaling-Tournament-Selection/
+DATA_DIR=${MAIN_DIR}DATA/${TASK}/
+REP_DIR=${MAIN_DIR}Masking/${TASK}/Prob${PROBABILITY}/Prop${PROPORTION}/Splits/T${PROPORTION}/Rep_${SLURM_ARRAY_TASK_ID}/
+RESULTS_DIR=${MAIN_DIR}RESULTS/${TASK}/Masking/Prob${PROBABILITY}/Prop${PROPORTION}/T${PROPORTION}/Rep_${SLURM_ARRAY_TASK_ID}/
+mkdir -p ${RESULTS_DIR}
+
+# Seed param offset
+OFFSET=$((2062))
+SEED=$((SLURM_ARRAY_TASK_ID + OFFSET))
+
+# let it rip
+python ~/Repos/Scaling-Tournament-Selection/Source/gp.py \
+--data_dir ${DATA_DIR} \
+--split_dir ${REP_DIR} \
+--selection t \
+--t_size 500 \
+--seed ${SEED} \
+--output_dir ${RESULTS_DIR} \
+--n_cpus 12 \
+--t_zero_prop ${PROPORTION} \
+--t_zero_prob ${PROBABILITY}

@@ -1,0 +1,12 @@
+=== Split Summary ===
+Input CSV:         /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/DATA/Yacht/data.csv
+Output Directory:  /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Yacht/Prob50/Splits/T75/Rep_18
+Data rows (N):     308
+Proportions:       train=0.7, val=0.15, test=0.15
+Allocated counts:  train=216, val=46, test=46
+Seed:              3397
+Rep:               18
+Saved:
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Yacht/Prob50/Splits/T75/Rep_18/training.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Yacht/Prob50/Splits/T75/Rep_18/validation.npy
+  - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Masking/Yacht/Prob50/Splits/T75/Rep_18/testing.npy
