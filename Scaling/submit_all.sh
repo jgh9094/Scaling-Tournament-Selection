@@ -23,7 +23,7 @@ for dataset in "${DATASETS[@]}"; do
     echo "----------------------------------"
 
     # HPC directory for this dataset
-    hpc_dir="All_Tournament_Sizes/${dataset}/HPC"
+    hpc_dir="Scaling/${dataset}/HPC"
 
     if [ -d "$hpc_dir" ]; then
         echo "  📁 Entering ${hpc_dir}/"
