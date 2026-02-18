@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Main directory where the repository is located
-MAIN_DIR=~/Repos/Scaling-Tournament-Selection/
+MAIN_DIR=~/Repos/Scaling-Tournament-Selection/Masking
 
-# Change to main directory
+# Change to Masking directory
 cd ${MAIN_DIR} || exit 1
 
 echo "=================================="
@@ -14,14 +14,14 @@ echo ""
 # Counter for submitted jobs
 total_submitted=0
 
-# Find all .sb files matching the pattern Masking/*/*/HPC/*.sb
-echo "Searching for .sb files in Masking/*/*/HPC/..."
+# Find all .sb files matching the pattern */*/*/HPC/*.sb
+echo "Searching for .sb files in */*/HPC/..."
 echo ""
 
 # Use find to locate all .sb files
 while IFS= read -r sb_file; do
     # Extract dataset and probability from path
-    # Path format: Masking/{DATASET}/{PROB}/HPC/*.sb
+    # Path format: ./{DATASET}/{PROB}/HPC/*.sb
     dataset=$(echo "$sb_file" | cut -d'/' -f2)
     prob=$(echo "$sb_file" | cut -d'/' -f3)
     filename=$(basename "$sb_file")
@@ -32,7 +32,7 @@ while IFS= read -r sb_file; do
     sbatch "$sb_file"
     ((total_submitted++))
 
-done < <(find Masking -path "*/*/HPC/*.sb" -type f | sort)
+done < <(find . -path "*/*/HPC/*.sb" -type f | sort)
 
 echo ""
 echo "=================================="
