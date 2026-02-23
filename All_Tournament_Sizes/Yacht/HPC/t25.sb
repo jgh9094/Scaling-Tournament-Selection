@@ -2,7 +2,7 @@
 ########## Define Resources Needed with SBATCH Lines ##########
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --array=1-31
+#SBATCH --array=1-41
 #SBATCH --cpus-per-task=12
 #SBATCH -t 02:00:00
 #SBATCH --mem=10GB
@@ -27,7 +27,7 @@ RESULTS_DIR=${MAIN_DIR}RESULTS/${TASK}/All_Tournament_Sizes/T${TOURNAMENT_SIZE}/
 mkdir -p ${RESULTS_DIR}
 
 # Seed param offset
-OFFSET=$((31*49))
+OFFSET=$((31*5))
 SEED=$((SLURM_ARRAY_TASK_ID + OFFSET))
 
 # let it rip

@@ -10,9 +10,6 @@ OUTPUT_BASE_DIR="/Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Sel
 # Path to make_splits.py script
 MAKE_SPLITS_SCRIPT="/Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Source/make_splits.py"
 
-# Selection configurations we are assessing (Lexicase and various tournament sizes)
-SELECTION_CONFIGS=("Lexicase" "T2" "T5" "T10" "T25" "T50" "T100" "T250" "T500")
-
 # Dataset configurations: dataset_name,row_count
 DATASETS=(
     "Airfoil,1503"
@@ -24,17 +21,17 @@ DATASETS=(
 )
 
 # Initialize seed to track total seeds used
-# Seed calculation: Each dataset gets 9 selection configs * 31 reps
+# Seed calculation: Each dataset gets 41 reps (shared across all selection configs)
 # Seeds align with OFFSET values in HPC .sb files:
-#   - Airfoil: OFFSET multipliers 0-8   (seeds 1-279)
-#   - Concrete: OFFSET multipliers 9-17  (seeds 280-558)
-#   - Energy-C: OFFSET multipliers 18-26 (seeds 559-837)
-#   - Energy-H: OFFSET multipliers 27-35 (seeds 838-1116)
-#   - Housing: OFFSET multipliers 36-44  (seeds 1117-1395)
-#   - Yacht: OFFSET multipliers 45-53    (seeds 1396-1674)
+#   - Airfoil: seeds 1-41
+#   - Concrete: seeds 42-82
+#   - Energy-C: seeds 83-123
+#   - Energy-H: seeds 124-164
+#   - Housing: seeds 165-205
+#   - Yacht: seeds 206-246
 
-# Dataset offset counter (increments by 9 for each dataset)
-DATASET_OFFSET=0
+# Dataset counter
+DATASET_INDEX=0
 
 # Process each dataset
 for DATASET_INFO in "${DATASETS[@]}"; do
@@ -52,48 +49,35 @@ for DATASET_INFO in "${DATASETS[@]}"; do
         continue
     fi
 
-    # Selection config offset counter (resets for each dataset)
-    CONFIG_OFFSET=0
+    # Create output directory for this dataset (shared across all selection configs)
+    OUTPUT_DIR="${OUTPUT_BASE_DIR}/${DATASET}/Splits"
+    mkdir -p "${OUTPUT_DIR}"
 
-    # Process each selection configuration
-    for SELECTION_CONFIG in "${SELECTION_CONFIGS[@]}"; do
-        echo "  Selection Config: ${SELECTION_CONFIG}"
+    # Calculate base seed for this dataset
+    BASE_SEED=$((DATASET_INDEX * 41))
 
-        # Create output directory for this combination
-        OUTPUT_DIR="${OUTPUT_BASE_DIR}/${DATASET}/Splits/${SELECTION_CONFIG}"
-        mkdir -p "${OUTPUT_DIR}"
+    # Generate 41 replicates with independent seeds (shared across all selection configs)
+    for REP in $(seq 1 41); do
+        # Seed = BASE_SEED + REP
+        SEED=$((BASE_SEED + REP))
 
-        # Calculate base seed for this config using OFFSET pattern: 31 * (DATASET_OFFSET + CONFIG_OFFSET)
-        BASE_OFFSET=$((31 * (DATASET_OFFSET + CONFIG_OFFSET)))
-
-        # Generate 31 replicates with independent seeds
-        for REP in $(seq 1 31); do
-            # Seed = BASE_OFFSET + REP
-            SEED=$((BASE_OFFSET + REP))
-
-            echo "    >>> Running: DATASET=${DATASET}  CONFIG=${SELECTION_CONFIG}  REP=${REP}  SEED=${SEED}"
-            python "${MAKE_SPLITS_SCRIPT}" \
-                "${N}" \
-                "${DATA_DIR}" \
-                "${OUTPUT_DIR}" \
-                "${SEED}" \
-                "${REP}"
-        done
-
-        echo "    Completed: ${SELECTION_CONFIG} (31 replicates, seeds ${BASE_OFFSET}+1 to ${BASE_OFFSET}+31)"
-
-        # Increment config offset for next selection config
-        CONFIG_OFFSET=$((CONFIG_OFFSET + 1))
+        echo "    >>> Running: DATASET=${DATASET}  REP=${REP}  SEED=${SEED}"
+        python "${MAKE_SPLITS_SCRIPT}" \
+            "${N}" \
+            "${DATA_DIR}" \
+            "${OUTPUT_DIR}" \
+            "${SEED}" \
+            "${REP}"
     done
 
-    echo "Completed ${DATASET}: All selection configurations processed"
+    echo "  Completed: ${DATASET} (41 replicates, seeds $((BASE_SEED + 1)) to $((BASE_SEED + 41)))"
     echo ""
 
-    # Increment dataset offset by 9 (number of selection configs)
-    DATASET_OFFSET=$((DATASET_OFFSET + 9))
+    # Increment dataset index
+    DATASET_INDEX=$((DATASET_INDEX + 1))
 done
 
-TOTAL_SEEDS=$((DATASET_OFFSET * 31))
+TOTAL_SEEDS=$((DATASET_INDEX * 41))
 echo "========================================"
 echo "All datasets completed successfully!"
 echo "Total unique seeds used: ${TOTAL_SEEDS}"
