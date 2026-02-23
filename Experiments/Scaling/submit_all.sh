@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Main directory where the repository is located
-MAIN_DIR=~/Repos/Scaling-Tournament-Selection/
+MAIN_DIR=~/Repos/Scaling-Tournament-Selection/Experiments/
 
 # Change to main directory
 cd ${MAIN_DIR} || exit 1
