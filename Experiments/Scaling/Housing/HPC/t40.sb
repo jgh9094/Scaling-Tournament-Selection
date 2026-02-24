@@ -29,7 +29,7 @@ RESULTS_DIR=${MAIN_DIR}RESULTS/${TASK}/Scaling/T${PROPORTION}/Rep_${SLURM_ARRAY_
 mkdir -p ${RESULTS_DIR}
 
 # Seed param offset
-OFFSET=$((41*1004))
+OFFSET=$((41*2004))
 SEED=$((SLURM_ARRAY_TASK_ID + OFFSET))
 
 # let it rip

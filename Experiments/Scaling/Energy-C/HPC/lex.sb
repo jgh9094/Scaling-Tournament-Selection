@@ -25,7 +25,7 @@ RESULTS_DIR=${MAIN_DIR}RESULTS/${TASK}/Scaling/Lexicase/Rep_${SLURM_ARRAY_TASK_I
 mkdir -p ${RESULTS_DIR}
 
 # Seed param offset
-OFFSET=$((41*1002))
+OFFSET=$((41*2002))
 SEED=$((SLURM_ARRAY_TASK_ID + OFFSET))
 
 # let it rip
