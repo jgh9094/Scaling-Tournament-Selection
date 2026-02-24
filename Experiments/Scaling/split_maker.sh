@@ -34,7 +34,7 @@ DATASETS=(
 DATASET_INDEX=0
 
 # offset for no overlap with other experiments (e.g., 1000+ for HPC runs)
-OFFSET=1000
+OFFSET=2000
 
 # Process each dataset
 for DATASET_INFO in "${DATASETS[@]}"; do

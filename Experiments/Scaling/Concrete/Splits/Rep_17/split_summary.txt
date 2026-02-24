@@ -4,7 +4,7 @@ Output Directory:  /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-S
 Data rows (N):     1030
 Proportions:       train=0.7, val=0.15, test=0.15
 Allocated counts:  train=721, val=155, test=154
-Seed:              1058
+Seed:              2058
 Rep:               17
 Saved:
   - /Users/hernandezj45/Desktop/Repositories/Scaling-Tournament-Selection/Experiments/Scaling/Concrete/Splits/Rep_17/training.npy

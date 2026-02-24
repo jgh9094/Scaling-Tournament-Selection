@@ -17,7 +17,7 @@ conda activate agp-ps
 
 # Tournament size
 TASK=Energy-H
-T_SIZE=500
+T_SIZE=250
 T_SCALE=0.0
 
 # Define the selector and output directory (they are the same here)

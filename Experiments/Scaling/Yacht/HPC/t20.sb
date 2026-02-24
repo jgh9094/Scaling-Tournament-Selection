@@ -17,7 +17,7 @@ conda activate agp-ps
 
 # Tournament size
 TASK=Yacht
-T_SIZE=500
+T_SIZE=250
 T_SCALE=0.2
 PROPORTION=20
 
