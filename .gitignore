@@ -1,4 +1,5 @@
 Scaling_Analysis
+Masking_
 Source/__pycache__/
 Experiments/*/Airfoil
 Experiments/*/Concrete
@@ -8,3 +9,6 @@ Experiments/*/Housing
 Experiments/*/Yacht
 Experiments/*/split_maker.sh
 Experiments/*/submit_all.sh
+RESULTS/
+Data-Tools/*/_book
+Data-Tools/*/*.csv
