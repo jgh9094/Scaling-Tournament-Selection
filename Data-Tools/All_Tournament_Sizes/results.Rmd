@@ -1,0 +1,251 @@
+---
+title: "Test Mean Squared Error (MSE) Results For All Tournament Sizes and Lexicase Selection"
+author: "Jose Guadalupe Hernandez"
+date: "`r Sys.Date()`"
+output: bookdown::pdf_book
+documentclass: article
+description: "Supplementary Material"
+geometry: margin=1.5cm
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 10,
+  fig.height = 8,
+  fig.align = 'center'
+)
+```
+
+```{r load-libraries, include=FALSE}
+rm(list = ls())
+library(ggplot2)
+library(cowplot)
+library(dplyr)
+library(PupillometryR)
+library(ggpubr)
+library(knitr)
+library(tidyr)
+```
+
+```{r theme-setup, include=FALSE}
+# Define conditions and visual parameters
+SELECTION <- c('Lexicase', 'T2', 'T5', 'T10', 'T25', 'T50', 'T100', 'T250', 'T500')
+SHAPE <- c(21, 21, 21, 21, 21, 21, 21, 21, 21)
+cb_palette <- c('#000000', '#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#F0E442', '#999999')
+TSIZE <- 17
+
+# Theme for plots
+ p_theme <- theme(
+  plot.title = element_text(face = "bold", hjust=0.5),
+  panel.border = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.title = element_text(size=17),
+  axis.text = element_text(size=11),
+  axis.text.y = element_text(angle = 90, hjust = 0.5),
+  axis.title.y = element_blank(),
+  legend.position = "none",
+  panel.background = element_rect(fill = "#f1f2f5",
+                                  colour = "white",
+                                  size = 0.5, linetype = "solid")
+)
+```
+
+```{r load-data, include=FALSE}
+# Load the Parent Selection Generator data
+all_data <- read.csv("all_tournament_sizes.csv")
+all_data$Selection <- factor(all_data$Selection, levels = SELECTION)
+```
+
+```{r helper-functions, include=FALSE}
+summarise_data <- function(data) {
+  data %>%
+    group_by(Selection) %>%
+    summarise(
+      count = n(),
+      min = min(performance, na.rm = TRUE),
+      p25 = quantile(performance, 0.25, na.rm = TRUE),
+      median = median(performance, na.rm = TRUE),
+      mean = mean(performance, na.rm = TRUE),
+      p75 = quantile(performance, 0.75, na.rm = TRUE),
+      max = max(performance, na.rm = TRUE)
+    )
+}
+
+plot_data <- function(data){
+  ggplot(data, aes(x = Selection, y = performance, color = Selection, fill = Selection, shape = Selection)) +
+  geom_flat_violin(position = position_nudge(x = .1, y = 0), scale = 'width', alpha = 0.2, width = 1.5) +
+  geom_boxplot(color = 'black', width = .07, outlier.shape = NA, alpha = 0.0, size = 1.0, position = position_nudge(x = .16, y = 0)) +
+  geom_point(position = position_jitter(width = 0.02, height = 0.0001), size = 1.5, alpha = 1.0) +
+  scale_y_log10(name = "Mean Squared Error") +
+  scale_x_discrete(name = "Parent Selection Generator") +
+  scale_shape_manual(values = SHAPE) +
+  scale_colour_manual(values = cb_palette) +
+  scale_fill_manual(values = cb_palette) +
+  ggtitle('Mean Squared Error on Testing Set') +
+   p_theme + coord_flip()
+}
+
+# Friedman test for the paired test design
+friedman_test <- function(data) {
+  friedman.test(performance ~ Selection | Rep, data = data)
+}
+
+# Wilcoxon rank-sum test for pairwise comparisons with Holm correction
+pairwise_wilcox_test <- function(data) {
+  # pivot data to wide format for paired test design
+  long_aligned <- data %>%
+  mutate(Rep = as.integer(Rep),
+         Selection = factor(Selection)) %>%
+  arrange(Selection, Rep)
+
+  # print(long_aligned)
+  pairwise.wilcox.test(long_aligned$performance, long_aligned$Selection, p.adjust.method = "holm", alternative = "t", paired = TRUE)
+}
+
+```
+
+# Background
+
+Compared how Dynamic Epsilon Lexicase Selection compairs against Tournament Selection with different tournament sizes.
+Implemented a DEAP evolutionary setup, with a population size of 500 evolved for 50 generations.
+Conducted a paired study, where a given block of lexicase and tournament selection runs are aligned by their random seed and used the same data splits (train, validate, test).
+We evaluate the performance of each selection strategy on six regression problems: Airfoil, Concrete, Energy Cold, Energy Heat, Housing, and Yacht. Each problem is evaluated using the Mean Squared Error (MSE) on a held-out testing set.
+The results are visualized using violin plots to show the distribution of MSE values for each selection strategy across 41 independent runs.
+Tasks and experimental setup were obtained from the paper `Down-Sampled Epsilon-Lexicase Selection for Real-World Symbolic Regression Problems` by Geiger, Sobania, and Franz (2023). Link [here](https://dl.acm.org/doi/abs/10.1145/3583131.3590400).
+
+## Statistical Analysis
+
+We employ two statistical tests:
+
+1. **Friedman Test**: A non-parametric test to detect differences across the nine selection strategies for each task. If p<0.05, we reject the null hypothesis of equal distributions across conditions.
+2. **Pairwise Wilcoxon Signed Rank test**: Post-hoc tests with Holm correction to test for two-tailed differences between selection strategies.
+
+# Airfoil
+
+```{r air-data, include=FALSE}
+# Load the Parent Selection Generator data
+problem_data <- filter(all_data, Task == 'Airfoil')
+```
+
+```{r air-plot, out.width="100%"}
+problem_data$Selection <- factor(problem_data$Selection, levels = SELECTION)
+problem_data %>% plot_data()
+```
+
+friedman_test
+
+```{r air-summary, echo=FALSE}
+problem_data %>% summarise_data()
+
+problem_data %>% friedman_test()
+
+problem_data %>% pairwise_wilcox_test()
+```
+
+# Concrete
+
+```{r concrete-data, include=FALSE}
+problem_data <- filter(all_data, Task == 'Concrete')
+```
+
+```{r concrete-plot, out.width="100%"}
+problem_data$Selection <- factor(problem_data$Selection, levels = SELECTION)
+problem_data %>% plot_data()
+```
+
+friedman_test
+
+```{r concrete-summary, echo=FALSE}
+problem_data %>%summarise_data()
+
+problem_data %>% friedman_test()
+
+problem_data %>% pairwise_wilcox_test()
+```
+
+# Energy Cold
+
+```{r ec-data, include=FALSE}
+problem_data <- filter(all_data, Task == 'Energy-C')
+```
+
+```{r ec-plot, out.width="100%"}
+problem_data$Selection <- factor(problem_data$Selection, levels = SELECTION)
+problem_data %>% plot_data()
+```
+
+friedman_test
+
+```{r ec-summary, echo=FALSE}
+problem_data %>% summarise_data()
+
+problem_data %>% friedman_test()
+
+problem_data %>% pairwise_wilcox_test()
+```
+
+# Energy Heat
+
+```{r eh-data, include=FALSE}
+problem_data <- filter(all_data, Task == 'Energy-H')
+```
+
+```{r eh-plot, out.width="100%"}
+problem_data$Selection <- factor(problem_data$Selection, levels = SELECTION)
+problem_data %>% plot_data()
+```
+
+friedman_test
+
+```{r eh-summary, echo=FALSE}
+problem_data %>% summarise_data()
+
+problem_data %>% friedman_test()
+
+problem_data %>% pairwise_wilcox_test()
+```
+
+# Housing
+
+```{r house-data, include=FALSE}
+problem_data <- filter(all_data, Task == 'Housing')
+```
+
+```{r house-plot, out.width="100%"}
+problem_data$Selection <- factor(problem_data$Selection, levels = SELECTION)
+problem_data %>% plot_data()
+```
+
+friedman_test
+
+```{r house-summary, echo=FALSE}
+problem_data %>% summarise_data()
+
+problem_data %>% friedman_test()
+
+problem_data %>% pairwise_wilcox_test()
+```
+
+# Yacht
+
+```{r yacht-data, include=FALSE}
+problem_data <- filter(all_data, Task == 'Yacht')
+```
+
+```{r yacht-plot, out.width="100%"}
+problem_data$Selection <- factor(problem_data$Selection, levels = SELECTION)
+problem_data %>% plot_data()
+```
+
+friedman_test
+
+```{r yacht-summary, echo=FALSE}
+problem_data %>% summarise_data()
+
+problem_data %>% friedman_test()
+
+problem_data %>% pairwise_wilcox_test()
+```
