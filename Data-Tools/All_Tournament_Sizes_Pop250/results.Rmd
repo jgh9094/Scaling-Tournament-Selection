@@ -32,8 +32,7 @@ library(tidyr)
 
 ```{r theme-setup, include=FALSE}
 # Define conditions and visual parameters
-SELECTION <- c('Lexicase', 'T', 'T100')
-# SELECTION <- c('Lexicase', 'T', 'T20', 'T40', 'T60', 'T80', 'T100')
+SELECTION <- c('Lexicase', 'T2', 'T5', 'T10', 'T25', 'T50', 'T100', 'T250', 'T500')
 SHAPE <- c(21, 21, 21, 21, 21, 21, 21, 21, 21)
 cb_palette <- c('#000000', '#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#F0E442', '#999999')
 TSIZE <- 17
@@ -56,8 +55,7 @@ TSIZE <- 17
 
 ```{r load-data, include=FALSE}
 # Load the Parent Selection Generator data
-all_data <- read.csv("scaling.csv")
-all_data <- filter(all_data, Selection == 'Lexicase' | Selection == 'T' | Selection == 'T100')
+all_data <- read.csv("all_tournament_sizes.csv")
 all_data$Selection <- factor(all_data$Selection, levels = SELECTION)
 ```
 
@@ -104,7 +102,7 @@ pairwise_wilcox_test <- function(data) {
   arrange(Selection, Rep)
 
   # print(long_aligned)
-  pairwise.wilcox.test(long_aligned$performance, long_aligned$Selection, p.adjust.method = "holm", alternative = "l", paired = TRUE)
+  pairwise.wilcox.test(long_aligned$performance, long_aligned$Selection, p.adjust.method = "holm", alternative = "t", paired = TRUE)
 }
 
 ```
@@ -133,7 +131,7 @@ problem_data <- filter(all_data, Task == 'Airfoil')
 ```
 
 ```{r air-plot, out.width="100%"}
-# problem_data$Selection <- factor(problem_data$Selection, levels = SELECTION)
+problem_data$Selection <- factor(problem_data$Selection, levels = SELECTION)
 problem_data %>% plot_data()
 ```
 
@@ -144,7 +142,6 @@ problem_data %>% summarise_data()
 
 problem_data %>% friedman_test()
 
-problem_data$Selection <- factor(problem_data$Selection, levels = c('T','T100','Lexicase'))
 problem_data %>% pairwise_wilcox_test()
 ```
 

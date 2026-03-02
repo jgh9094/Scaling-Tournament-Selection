@@ -42,9 +42,9 @@ def compile_results(base_dir='RESULTS'):
         print(f"Processing task: {task}")
 
         # Look for All_Tournament_Sizes directory
-        all_tourney_dir = task_dir / 'All_Tournament_Sizes'
+        all_tourney_dir = task_dir / 'All_Tournament_Sizes_Pop1000'
         if not all_tourney_dir.exists() or not all_tourney_dir.is_dir():
-            print(f"  Warning: All_Tournament_Sizes directory not found in {task}")
+            print(f"  Warning: All_Tournament_Sizes_Pop1000 directory not found in {task}")
             continue
 
         # Walk through Selection directories

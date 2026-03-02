@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Script to compile test MSE results from RESULTS directory structure.
-Directory structure: RESULTS/Task/Scaling_450/Selection/Rep_i/test_mse.txt
+Directory structure: RESULTS/Task/All_Tournament_Sizes/Selection/Rep_i/test_mse.txt
 """
 
 import argparse
@@ -41,14 +41,14 @@ def compile_results(base_dir='RESULTS'):
         task = task_dir.name
         print(f"Processing task: {task}")
 
-        # Look for Scaling directory
-        scaling_dir = task_dir / 'Scaling_450'
-        if not scaling_dir.exists() or not scaling_dir.is_dir():
-            print(f"  Warning: Scaling_450 directory not found in {task}")
+        # Look for All_Tournament_Sizes directory
+        all_tourney_dir = task_dir / 'All_Tournament_Sizes_Pop250'
+        if not all_tourney_dir.exists() or not all_tourney_dir.is_dir():
+            print(f"  Warning: All_Tournament_Sizes_Pop250 directory not found in {task}")
             continue
 
         # Walk through Selection directories
-        for selection_dir in sorted(scaling_dir.iterdir()):
+        for selection_dir in sorted(all_tourney_dir.iterdir()):
             if not selection_dir.is_dir() or selection_dir.name.startswith('.'):
                 continue
 
@@ -125,7 +125,7 @@ def main():
 Expected directory structure:
   RESULTS/
     Task1/
-      Scaling/
+      All_Tournament_Sizes/
         Selection1/
           Rep_1/
             test_mse.txt
@@ -142,7 +142,7 @@ Example usage:
   python compile_data.py /path/to/RESULTS
 
 Output:
-  Creates a single CSV file (scaling.csv) containing:
+  Creates a single CSV file (all_tournament_sizes.csv) containing:
   Columns: Task, Selection, Rep, performance
         """
     )
@@ -156,8 +156,8 @@ Output:
     parser.add_argument(
         '-o', '--output',
         type=str,
-        default='scaling.csv',
-        help='Output CSV filename (default: scaling.csv)'
+        default='all_tournament_sizes.csv',
+        help='Output CSV filename (default: all_tournament_sizes.csv)'
     )
 
     args = parser.parse_args()
