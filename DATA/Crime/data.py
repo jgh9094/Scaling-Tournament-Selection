@@ -69,6 +69,12 @@ if cols_with_empty:
 else:
     print("No columns with empty values found")
 
+# Rename columns to x0, x1, x2, ..., keeping 'y' as is
+feature_cols = [col for col in data.columns if col != 'y']
+new_col_names = {feature_cols[i]: f'x{i}' for i in range(len(feature_cols))}
+data = data.rename(columns=new_col_names)
+print(f"\nRenamed {len(feature_cols)} feature columns to x0, x1, ..., x{len(feature_cols)-1}")
+
 # Save to CSV
 data.to_csv('data.csv', index=False)
 print(f"\nData saved to data.csv with final shape: {data.shape}")
