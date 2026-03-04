@@ -3,9 +3,14 @@ Masking_
 Source/__pycache__/
 Experiments/*/Airfoil
 Experiments/*/Concrete
+Experiments/*/Crime
 Experiments/*/Energy-C
 Experiments/*/Energy-H
 Experiments/*/Housing
+Experiments/*/Parkinsons-M
+Experiments/*/Parkinsons-T
+Experiments/*/Wine-R
+Experiments/*/Wine-W
 Experiments/*/Yacht
 Experiments/*/split_maker.sh
 Experiments/*/submit_all.sh
