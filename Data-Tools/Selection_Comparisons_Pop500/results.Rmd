@@ -32,9 +32,9 @@ library(tidyr)
 
 ```{r theme-setup, include=FALSE}
 # Define conditions and visual parameters
-SELECTION <- c('Lexicase', 'T2', 'T5', 'T10', 'T25', 'T50', 'T100', 'T250', 'T500')
-SHAPE <- c(21, 21, 21, 21, 21, 21, 21, 21, 21)
-cb_palette <- c('#000000', '#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#F0E442', '#999999')
+SELECTION <- c('Lexicase', 'T2', 'T5', 'T10', 'T25', 'T50', 'T100', 'T250', 'T500', 'T1000')
+SHAPE <- c(21, 21, 21, 21, 21, 21, 21, 21, 21, 21)
+cb_palette <- c('#000000', '#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#F0E442', '#999999', '#332288')
 TSIZE <- 17
 
 # Theme for plots
@@ -55,7 +55,7 @@ TSIZE <- 17
 
 ```{r load-data, include=FALSE}
 # Load the Parent Selection Generator data
-all_data <- read.csv("all_tournament_sizes.csv")
+all_data <- read.csv("selection_comp.csv")
 all_data$Selection <- factor(all_data$Selection, levels = SELECTION)
 ```
 
@@ -110,12 +110,12 @@ pairwise_wilcox_test <- function(data) {
 # Background
 
 Compared how Dynamic Epsilon Lexicase Selection compairs against Tournament Selection with different tournament sizes.
-Implemented a DEAP evolutionary setup, with a population size of 500 evolved for 50 generations.
+Implemented a DEAP evolutionary setup, with a population size of 1000 evolved for 25 generations.
 Conducted a paired study, where a given block of lexicase and tournament selection runs are aligned by their random seed and used the same data splits (train, validate, test).
 We evaluate the performance of each selection strategy on six regression problems: Airfoil, Concrete, Energy Cold, Energy Heat, Housing, and Yacht. Each problem is evaluated using the Mean Squared Error (MSE) on a held-out testing set.
 The results are visualized using violin plots to show the distribution of MSE values for each selection strategy across 41 independent runs.
 Tasks and experimental setup were obtained from the paper `Down-Sampled Epsilon-Lexicase Selection for Real-World Symbolic Regression Problems` by Geiger, Sobania, and Franz (2023). Link [here](https://dl.acm.org/doi/abs/10.1145/3583131.3590400).
-Population size and generations were adjusted to 500 and 50, respectively, to keep the number evaluations the same as the original study.
+Population size and generations were adjusted to 1000 and 25, respectively, to keep the number evaluations the same as the original study and to explore how population size impacts selection.
 
 ## Statistical Analysis
 
