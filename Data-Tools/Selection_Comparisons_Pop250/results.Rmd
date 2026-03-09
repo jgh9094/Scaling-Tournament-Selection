@@ -32,9 +32,9 @@ library(tidyr)
 
 ```{r theme-setup, include=FALSE}
 # Define conditions and visual parameters
-SELECTION <- c('Lexicase', 'T2', 'T5', 'T10', 'T25', 'T50', 'T100', 'T250', 'T500', 'T1000')
-SHAPE <- c(21, 21, 21, 21, 21, 21, 21, 21, 21, 21)
-cb_palette <- c('#000000', '#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#F0E442', '#999999', '#332288')
+SELECTION <- c('Dynamic-Lexicase','Semi-Dynamic-Lexicase','Lexicase','Tournament','Tournament_Scaled')
+SHAPE <- c(21, 21, 21, 21, 21)
+cb_palette <- c('#0072B2', '#E69F00', '#009E73', '#CC79A7', '#D55E00')
 TSIZE <- 17
 
 # Theme for plots

@@ -18,12 +18,27 @@ def extract_replicate_number(rep_dir_name):
     return None
 
 
+# Mapping of selection algorithms to acronyms
+SELECTION_ACRONYMS = {
+    'Dynamic-Lexicase': 'DLex',
+    'Semi-Dynamic-Lexicase': 'SDLex',
+    'Lexicase': 'Lex',
+    'Tournament': 'Tour',
+    'Tournament_Scaled': 'STour'
+}
+
+
+def get_selection_acronym(selection_name):
+    """Get acronym for selection algorithm name"""
+    return SELECTION_ACRONYMS.get(selection_name, selection_name)
+
+
 def compile_results(base_dir='RESULTS'):
     """
     Traverse RESULTS directory and collect all test_mse.txt values.
 
     Returns:
-        pandas.DataFrame with columns: Task, Selection, Rep, performance
+        pandas.DataFrame with columns: Task, Selection, Acro, Rep, performance
     """
     results = []
     base_path = Path(base_dir)
@@ -74,6 +89,7 @@ def compile_results(base_dir='RESULTS'):
                         results.append({
                             'Task': task,
                             'Selection': selection,
+                            'Acro': get_selection_acronym(selection),
                             'Rep': rep,
                             'performance': performance
                         })
@@ -143,7 +159,7 @@ Example usage:
 
 Output:
   Creates a single CSV file (selection_comp.csv) containing:
-  Columns: Task, Selection, Rep, performance
+  Columns: Task, Selection, Acro, Rep, performance
         """
     )
     parser.add_argument(
